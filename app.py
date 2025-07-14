@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
-import google.generativeai as genai
+import requests
 import PyPDF2
 import io
 import json
@@ -24,10 +24,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure Gemini API (free tier with generous limits)
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "YOUR_GEMINI_API_KEY_HERE")
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
+# Configure Ollama API (completely free, unlimited, local)
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama2")  # or "mistral", "codellama", etc.
 
 # In-memory storage for document content and conversation history
 document_storage = {}
@@ -90,19 +89,45 @@ def extract_text_from_txt(txt_file):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error reading TXT: {str(e)}")
 
-def generate_summary(text: str, max_words: int = 150) -> str:
-    """Generate a concise summary using Gemini API"""
+def call_ollama_api(prompt: str, system_prompt: str = "") -> str:
+    """Call Ollama API for text generation"""
     try:
-        prompt = f"""
-        Please provide a concise summary of the following document in no more than {max_words} words. 
-        Focus on the main points, key findings, and conclusions.
+        url = f"{OLLAMA_BASE_URL}/api/generate"
+        data = {
+            "model": OLLAMA_MODEL,
+            "prompt": prompt,
+            "system": system_prompt,
+            "stream": False,
+            "options": {
+                "temperature": 0.7,
+                "top_p": 0.9,
+                "max_tokens": 2048
+            }
+        }
         
-        Document:
-        {text[:8000]}  # Limit input to avoid token limits
-        """
+        response = requests.post(url, json=data, timeout=120)
+        if response.status_code == 200:
+            result = response.json()
+            return result.get("response", "").strip()
+        else:
+            return f"Error: Ollama API returned status {response.status_code}"
+    except requests.exceptions.ConnectionError:
+        return "Error: Could not connect to Ollama. Please ensure Ollama is running on your system."
+    except Exception as e:
+        return f"Error calling Ollama API: {str(e)}"
+
+def generate_summary(text: str, max_words: int = 150) -> str:
+    """Generate a concise summary using Ollama API"""
+    try:
+        prompt = f"""Please provide a concise summary of the following document in no more than {max_words} words. Focus on the main points, key findings, and conclusions.
+
+Document:
+{text[:8000]}"""
         
-        response = model.generate_content(prompt)
-        return response.text.strip()
+        system_prompt = "You are a helpful assistant that creates concise, accurate summaries of documents. Focus on extracting the most important information."
+        
+        response = call_ollama_api(prompt, system_prompt)
+        return response
     except Exception as e:
         return f"Error generating summary: {str(e)}"
 
@@ -186,27 +211,24 @@ async def ask_question(request: QuestionRequest):
             recent_history = conversation_history[request.session_id][-5:]  # Last 5 interactions
             history_context = "\n".join([f"Q: {h['question']}\nA: {h['answer']}" for h in recent_history])
         
-        prompt = f"""
-        Based on the following document, answer the question with contextual understanding.
-        Provide a clear answer and justify it with specific references from the document.
-        Do not hallucinate or fabricate information not present in the document.
+        prompt = f"""Based on the following document, answer the question with contextual understanding. Provide a clear answer and justify it with specific references from the document. Do not hallucinate or fabricate information not present in the document.
+
+Previous conversation context:
+{history_context}
+
+Document:
+{document['content']}
+
+Question: {request.question}
+
+Please provide:
+1. A clear answer
+2. Justification with specific references from the document
+3. A confidence score (0-1)"""
         
-        Previous conversation context:
-        {history_context}
+        system_prompt = "You are a helpful assistant that answers questions based strictly on the provided document content. Always cite specific parts of the document to support your answers."
         
-        Document:
-        {document['content']}
-        
-        Question: {request.question}
-        
-        Please provide:
-        1. A clear answer
-        2. Justification with specific references from the document
-        3. A confidence score (0-1)
-        """
-        
-        response = model.generate_content(prompt)
-        answer_text = response.text.strip()
+        answer_text = call_ollama_api(prompt, system_prompt)
         
         # Extract highlighted text from document
         highlighted_text = find_relevant_text(document['content'], request.question)
@@ -237,30 +259,29 @@ async def generate_challenge(session_id: str):
     document = document_storage[session_id]
     
     try:
-        prompt = f"""
-        Based on the following document, generate exactly 3 challenging questions that test:
-        1. Comprehension and understanding
-        2. Logical reasoning
-        3. Critical thinking
-        
-        Make sure the questions can be answered from the document content.
-        Format your response as JSON with the following structure:
+        prompt = f"""Based on the following document, generate exactly 3 challenging questions that test:
+1. Comprehension and understanding
+2. Logical reasoning
+3. Critical thinking
+
+Make sure the questions can be answered from the document content.
+Format your response as JSON with the following structure:
+{{
+    "questions": [
         {{
-            "questions": [
-                {{
-                    "question": "Your question here",
-                    "expected_answer": "Expected answer based on document",
-                    "difficulty": "easy/medium/hard"
-                }}
-            ]
+            "question": "Your question here",
+            "expected_answer": "Expected answer based on document",
+            "difficulty": "easy/medium/hard"
         }}
+    ]
+}}
+
+Document:
+{document['content'][:6000]}"""
         
-        Document:
-        {document['content'][:6000]}  # Limit to avoid token limits
-        """
+        system_prompt = "You are a helpful assistant that creates challenging comprehension questions based on document content. Always respond with valid JSON format."
         
-        response = model.generate_content(prompt)
-        response_text = response.text.strip()
+        response_text = call_ollama_api(prompt, system_prompt)
         
         # Extract JSON from response
         json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
@@ -301,25 +322,24 @@ async def evaluate_answer(request: UserAnswerRequest):
     document = document_storage[request.session_id]
     
     try:
-        prompt = f"""
-        Evaluate the user's answer to the question based on the document content.
-        Provide a score (0-100), feedback, and the correct answer with justification.
+        prompt = f"""Evaluate the user's answer to the question based on the document content.
+Provide a score (0-100), feedback, and the correct answer with justification.
+
+Document:
+{document['content'][:6000]}
+
+Question: {request.question}
+User's Answer: {request.user_answer}
+
+Please evaluate and provide:
+1. Score (0-100)
+2. Detailed feedback
+3. Correct answer based on document
+4. Justification with document references"""
         
-        Document:
-        {document['content'][:6000]}
+        system_prompt = "You are a helpful assistant that evaluates answers based strictly on document content. Provide constructive feedback and accurate scoring."
         
-        Question: {request.question}
-        User's Answer: {request.user_answer}
-        
-        Please evaluate and provide:
-        1. Score (0-100)
-        2. Detailed feedback
-        3. Correct answer based on document
-        4. Justification with document references
-        """
-        
-        response = model.generate_content(prompt)
-        evaluation_text = response.text.strip()
+        evaluation_text = call_ollama_api(prompt, system_prompt)
         
         # Extract score (simple pattern matching)
         score_match = re.search(r'(\d+(?:\.\d+)?)', evaluation_text)

@@ -1,6 +1,6 @@
 # Smart Research Assistant
 
-A powerful AI-powered application for document analysis, comprehension testing, and intelligent question answering using Google's Gemini API.
+A powerful AI-powered application for document analysis, comprehension testing, and intelligent question answering using Ollama (completely free, unlimited, local AI).
 
 ## 🌟 Features
 
@@ -21,7 +21,7 @@ A powerful AI-powered application for document analysis, comprehension testing, 
 ### Prerequisites
 - Python 3.8 or higher
 - Node.js 16 or higher
-- Google Gemini API key (free tier available)
+- Ollama (completely free, unlimited AI models)
 
 ### Installation
 
@@ -35,12 +35,9 @@ A powerful AI-powered application for document analysis, comprehension testing, 
    ```bash
    ./setup.sh
    ```
+   This will install Ollama and download the default AI model.
 
-3. **Configure your API key**
-   - Edit `.env` file and add your Gemini API key
-   - Get your free API key from: https://makersuite.google.com/app/apikey
-
-4. **Start the application**
+3. **Start the application**
    ```bash
    ./start.sh
    ```
@@ -83,9 +80,10 @@ If you prefer manual setup:
 # Install Python dependencies
 pip install -r requirements.txt
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env and add your Gemini API key
+# Install and start Ollama
+curl -fsSL https://ollama.ai/install.sh | sh
+ollama serve &
+ollama pull llama2
 
 # Start backend server
 python app.py
@@ -144,7 +142,7 @@ npm start
 
 ### Backend Technologies
 - **FastAPI**: Modern Python web framework
-- **Google Gemini API**: AI text processing and generation
+- **Ollama**: Local AI models (completely free & unlimited)
 - **PyPDF2**: PDF text extraction
 - **Pydantic**: Data validation and settings management
 
@@ -174,7 +172,7 @@ cd frontend && npm start
 ### Remote Deployment
 The application is designed for easy deployment:
 
-1. **Environment Variables**: Configure `GEMINI_API_KEY`
+1. **Ollama Installation**: Install Ollama on your server
 2. **Port Configuration**: Default port 8000 (configurable)
 3. **Static Files**: Frontend builds to `/frontend/build`
 4. **CORS**: Configured for cross-origin requests
@@ -192,8 +190,9 @@ CMD ["python", "app.py"]
 
 ## 📊 Performance & Limitations
 
-### API Limits
-- **Gemini API**: Generous free tier (60 requests/minute)
+### System Requirements
+- **Ollama**: Completely free, unlimited requests
+- **RAM**: 4GB+ recommended for AI models
 - **File Size**: Max 10MB per document
 - **Session Storage**: In-memory (suitable for demo/development)
 
@@ -216,7 +215,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Google Gemini API for powerful AI capabilities
+- Ollama for providing free, unlimited local AI models
 - React and Material-UI for excellent frontend experience
 - FastAPI for modern Python web development
 
@@ -225,7 +224,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For issues or questions:
 1. Check the API documentation at `/docs`
 2. Review the console logs for error details
-3. Ensure your Gemini API key is correctly configured
+3. Ensure Ollama is running (`ollama serve`)
 4. Verify file format and size requirements
 
 ---
