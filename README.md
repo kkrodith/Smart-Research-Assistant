@@ -27,7 +27,7 @@ A powerful AI-powered application for document analysis, comprehension testing, 
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/kkrodith/Smart-Research-Assistant
    cd smart-research-assistant
    ```
 
