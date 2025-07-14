@@ -10,10 +10,14 @@ RUN npm run build
 # Python backend
 FROM python:3.9-slim
 
-# Install system dependencies
+# Install system dependencies including Ollama
 RUN apt-get update && apt-get install -y \
     gcc \
+    curl \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Ollama
+RUN curl -fsSL https://ollama.ai/install.sh | sh
 
 # Set working directory
 WORKDIR /app
@@ -40,5 +44,12 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/sessions || exit 1
 
+# Create startup script
+RUN echo '#!/bin/bash\n\
+ollama serve &\n\
+sleep 10\n\
+ollama pull llama2\n\
+python app.py' > /app/start.sh && chmod +x /app/start.sh
+
 # Start command
-CMD ["python", "app.py"]
+CMD ["/app/start.sh"]
