@@ -21,7 +21,7 @@ app = FastAPI(title="Smart Research Assistant", version="1.0.0")
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # For production, use your Vercel URL instead of "*"
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
