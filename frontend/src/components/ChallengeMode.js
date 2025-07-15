@@ -47,9 +47,7 @@ const ChallengeMode = ({ sessionId }) => {
     setChallengeCompleted(false);
 
     try {
-      const response = await axios.post('/challenge', null, {
-        params: { session_id: sessionId }
-      });
+      const response = await axios.post('/challenge', { session_id: sessionId });
       setQuestions(response.data.questions);
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to generate questions');

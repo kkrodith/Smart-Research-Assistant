@@ -9,18 +9,21 @@ import {
   CardContent,
   Divider,
   Chip,
-  Alert
+  Alert,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import {
   Description,
   QuestionAnswer,
   Psychology,
-  Schedule
+  Schedule,
+  Close
 } from '@mui/icons-material';
 import AskAnything from './AskAnything';
 import ChallengeMode from './ChallengeMode';
 
-const DocumentAnalysis = ({ document, sessionId }) => {
+const DocumentAnalysis = ({ document, sessionId, onRemoveDocument }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (event, newValue) => {
@@ -54,6 +57,14 @@ const DocumentAnalysis = ({ document, sessionId }) => {
                 size="small"
                 variant="outlined"
               />
+              {/* Remove (X) button */}
+              {onRemoveDocument && (
+                <Tooltip title="Remove document">
+                  <IconButton size="small" onClick={onRemoveDocument}>
+                    <Close />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Box>
           </Box>
           

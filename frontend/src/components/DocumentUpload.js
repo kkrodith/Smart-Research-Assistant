@@ -44,8 +44,7 @@ const DocumentUpload = ({ onUpload }) => {
       });
 
       // Extract session ID from response (assuming it's in the upload timestamp)
-      const sessionId = response.data.upload_time.replace(/[-:T]/g, '').replace(/\..+/, '');
-      
+      const sessionId = response.data.session_id; // Use backend's session_id
       onUpload(response.data, sessionId);
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to upload file');

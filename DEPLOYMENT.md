@@ -10,7 +10,7 @@
 
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │                 │    │                 │    │                 │
-│   React Frontend│    │  FastAPI Backend│    │  Google Gemini  │
+│   React Frontend│    │  FastAPI Backend│    │  Hugging Face Inference API │
 │                 │    │                 │    │      API        │
 │  - Material-UI  │◄──►│  - Document     │◄──►│                 │
 │  - File Upload  │    │    Processing   │    │  - Text Analysis│
@@ -37,12 +37,12 @@
 
 ```bash
 # 1. Clone and setup
-git clone <your-repo-url>
+git clone https://github.com/kkrodith/Smart-Research-Assistant
 cd smart-research-assistant
 ./setup.sh
 
 # 2. Configure API key
-nano .env  # Add your Gemini API key
+# No .env or API key setup required
 
 # 3. Start application
 ./start.sh
@@ -71,7 +71,6 @@ docker-compose down
 ```bash
 # Backend
 pip install -r requirements.txt
-export GEMINI_API_KEY=your_api_key_here
 python app.py
 
 # Frontend (separate terminal)
@@ -93,7 +92,6 @@ npm run build
 heroku create smart-research-assistant
 
 # Set environment variables
-heroku config:set GEMINI_API_KEY=your_api_key_here
 
 # Deploy
 git push heroku main
@@ -116,7 +114,6 @@ railway init
 railway up
 
 # Set environment variables
-railway variables set GEMINI_API_KEY=your_api_key_here
 ```
 
 #### 3. Vercel Deployment
