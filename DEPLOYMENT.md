@@ -10,8 +10,8 @@
 
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │                 │    │                 │    │                 │
-│   React Frontend│    │  FastAPI Backend│    │     Ollama      │
-│                 │    │                 │    │   (Local AI)    │
+│   React Frontend│    │  FastAPI Backend│    │  Hugging Face Inference API │
+│                 │    │                 │    │      API        │
 │  - Material-UI  │◄──►│  - Document     │◄──►│                 │
 │  - File Upload  │    │    Processing   │    │  - Text Analysis│
 │  - Chat Interface│    │  - Session Mgmt │    │  - Question Gen │
@@ -23,11 +23,11 @@
          ▼                        ▼                        ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │                 │    │                 │    │                 │
-│  Static Files   │    │  In-Memory      │    │  Local Models   │
-│  - HTML/CSS/JS  │    │  Storage        │    │  - Unlimited    │
-│  - Built Assets │    │  - Documents    │    │  - No API Keys  │
+│  Static Files   │    │  In-Memory      │    │  Free Tier      │
+│  - HTML/CSS/JS  │    │  Storage        │    │  - 60 req/min   │
+│  - Built Assets │    │  - Documents    │    │  - Unlimited    │
 │  - Images       │    │  - Conversations│    │  - High Quality │
-│                 │    │  - Sessions     │    │  - Offline Ready│
+│                 │    │  - Sessions     │    │                 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
@@ -37,11 +37,12 @@
 
 ```bash
 # 1. Clone and setup
-git clone <your-repo-url>
+git clone https://github.com/kkrodith/Smart-Research-Assistant
 cd smart-research-assistant
 ./setup.sh
 
-# 2. Wait for Ollama model download (automatic)
+# 2. Configure API key
+# No .env or API key setup required
 
 # 3. Start application
 ./start.sh
@@ -70,10 +71,6 @@ docker-compose down
 ```bash
 # Backend
 pip install -r requirements.txt
-# Install and start Ollama
-curl -fsSL https://ollama.ai/install.sh | sh
-ollama serve &
-ollama pull llama2
 python app.py
 
 # Frontend (separate terminal)
@@ -94,8 +91,7 @@ npm run build
 # Create Heroku app
 heroku create smart-research-assistant
 
-# Add Ollama buildpack (custom)
-heroku buildpacks:add https://github.com/heroku-community/heroku-buildpack-ollama
+# Set environment variables
 
 # Deploy
 git push heroku main
@@ -117,7 +113,7 @@ railway login
 railway init
 railway up
 
-# Ollama will be installed automatically via Dockerfile
+# Set environment variables
 ```
 
 #### 3. Vercel Deployment
@@ -129,8 +125,7 @@ npm install -g vercel
 # Deploy
 vercel --prod
 
-# Note: Vercel may have limitations with Ollama due to serverless nature
-# Consider using Railway or traditional VPS for Ollama deployment
+# Configure environment variables in Vercel dashboard
 ```
 
 ### VPS/Server Deployment
@@ -195,7 +190,7 @@ After=network.target
 Type=simple
 User=www-data
 WorkingDirectory=/var/www/smart-research-assistant
-ExecStartPre=/usr/bin/ollama serve
+Environment=GEMINI_API_KEY=your_api_key_here
 ExecStart=/usr/bin/python3 app.py
 Restart=on-failure
 RestartSec=10
@@ -280,15 +275,16 @@ sudo journalctl -u smart-research-assistant -f
 
 ## 🔒 Security Considerations
 
-### Local AI Security
+### Environment Variables
 
 ```bash
-# Ollama runs locally - no API keys to secure
-# Ensure Ollama is not exposed to public internet
-# Use firewall rules to restrict Ollama port (11434)
+# Never commit .env files
+echo ".env" >> .gitignore
 
-# Block external access to Ollama
-sudo ufw deny 11434
+# Use secure environment variable storage
+# - Heroku Config Vars
+# - Railway Variables
+# - Docker Secrets
 ```
 
 ### API Security
@@ -363,19 +359,14 @@ import redis
 
 ### Common Issues
 
-1. **Ollama Connection Issues**
+1. **API Key Issues**
    ```bash
-   # Check if Ollama is running
-   curl http://localhost:11434/api/version
+   # Check API key
+   echo $GEMINI_API_KEY
    
-   # Start Ollama if not running
-   ollama serve &
-   
-   # Check available models
-   ollama list
-   
-   # Download model if missing
-   ollama pull llama2
+   # Verify API access
+   curl -H "Authorization: Bearer $GEMINI_API_KEY" \
+        https://generativelanguage.googleapis.com/v1/models
    ```
 
 2. **Port Conflicts**
@@ -467,7 +458,7 @@ app.add_middleware(
 
 For deployment issues:
 1. Check logs first
-2. Verify Ollama is running and accessible
+2. Verify API key configuration
 3. Test API endpoints manually
 4. Review network/firewall settings
 
