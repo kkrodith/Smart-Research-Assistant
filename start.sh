@@ -8,13 +8,6 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
-# Check if Gemini API key is set
-if grep -q "your_gemini_api_key_here" .env; then
-    echo "⚠️  Please edit .env file and add your Gemini API key!"
-    echo "   Get your free API key from: https://makersuite.google.com/app/apikey"
-    exit 1
-fi
-
 # Load environment variables
 export $(cat .env | xargs)
 

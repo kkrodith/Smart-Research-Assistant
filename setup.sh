@@ -34,14 +34,11 @@ cd ..
 if [ ! -f .env ]; then
     echo "⚙️  Creating .env file..."
     cp .env.example .env
-    echo "⚠️  Please edit .env file and add your Gemini API key!"
-    echo "   Get your free API key from: https://makersuite.google.com/app/apikey"
 fi
 
 echo "✅ Setup complete!"
 echo ""
 echo "Next steps:"
-echo "1. Edit .env file and add your Gemini API key"
 echo "2. Run: ./start.sh"
 echo ""
 echo "Or run manually:"
