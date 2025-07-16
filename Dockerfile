@@ -1,11 +1,11 @@
-FROM node:16-alpine AS frontend-builder
+# FROM node:16-alpine AS frontend-builder
 
-# Build frontend
-WORKDIR /app/frontend
-COPY frontend/package*.json ./
-RUN npm ci --only=production
-COPY frontend/ ./
-RUN npm run build
+# # Build frontend
+# WORKDIR /app/frontend
+# COPY frontend/package*.json ./
+# RUN npm ci --only=production
+# COPY frontend/ ./
+# RUN npm run build
 
 # Python backend
 FROM python:3.9-slim
@@ -27,7 +27,7 @@ COPY app.py .
 COPY context.md .
 
 # Copy frontend build from previous stage
-COPY --from=frontend-builder /app/frontend/build ./frontend/build
+# COPY --from=frontend-builder /app/frontend/build ./frontend/build
 
 # Create a non-root user
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
