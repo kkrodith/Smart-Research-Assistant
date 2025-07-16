@@ -39,6 +39,8 @@ const ChallengeMode = ({ sessionId }) => {
   const [error, setError] = useState('');
   const [challengeCompleted, setChallengeCompleted] = useState(false);
 
+  const apiUrl = process.env.REACT_APP_API_URL;
+
   const generateQuestions = async () => {
     setIsLoading(true);
     setError('');
@@ -47,7 +49,7 @@ const ChallengeMode = ({ sessionId }) => {
     setChallengeCompleted(false);
 
     try {
-      const response = await axios.post('/challenge', { session_id: sessionId });
+      const response = await axios.post(`${apiUrl}/challenge`, { session_id: sessionId });
       setQuestions(response.data.questions);
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to generate questions');
@@ -63,7 +65,7 @@ const ChallengeMode = ({ sessionId }) => {
     setError('');
 
     try {
-      const response = await axios.post('/evaluate', {
+      const response = await axios.post(`${apiUrl}/evaluate`, {
         question: questions[currentQuestionIndex].question,
         user_answer: userAnswer,
         session_id: sessionId

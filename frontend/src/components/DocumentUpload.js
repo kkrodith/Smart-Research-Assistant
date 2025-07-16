@@ -22,6 +22,8 @@ const DocumentUpload = ({ onUpload }) => {
   const [error, setError] = useState('');
   const [dragActive, setDragActive] = useState(false);
 
+  const apiUrl = process.env.REACT_APP_API_URL;
+
   const uploadFile = async (file) => {
     setIsUploading(true);
     setError('');
@@ -31,7 +33,7 @@ const DocumentUpload = ({ onUpload }) => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await axios.post('/upload', formData, {
+      const response = await axios.post(`${apiUrl}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

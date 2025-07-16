@@ -58,7 +58,8 @@ const AskAnything = ({ sessionId }) => {
     setConversation(prev => [...prev, userMessage]);
 
     try {
-      const response = await axios.post('/ask', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await axios.post(`${apiUrl}/ask`, {
         question: question,
         session_id: sessionId
       });
