@@ -3,3 +3,7 @@ uvicorn
 python-multipart
 pydantic
 requests
+openai
+PyPDF2
+dotenv
+
