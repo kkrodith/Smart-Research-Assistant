@@ -1,6 +1,6 @@
 # Smart Research Assistant
 
-Project link:-  [Link Text](https://smart-research-assistant-eozyn757r-huny-chs-projects.vercel.app/)
+Project link:-  [Smart-research-assistant link](https://smart-research-assistant-eozyn757r-huny-chs-projects.vercel.app/)
 
 A powerful AI-powered application for document analysis, comprehension testing, and intelligent question answering using OpenAI's GPT-3.5-turbo (like real PDF summarizers).
 
