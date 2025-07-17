@@ -74,19 +74,18 @@ function App() {
         setDarkMode={setDarkMode}
       />
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box sx={{ minHeight: '80vh', display: 'flex', flexDirection: 'row' }}>
+        <Box sx={{ minHeight: '80vh', display: 'flex', flexDirection: 'row', background: 'linear-gradient(135deg, #e0e7ff 0%, #f5f7fa 100%)', borderRadius: 4, boxShadow: 3 }}>
           {/* History Sidebar */}
-          <Box sx={{ width: 220, mr: 2 }}>
-            <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ width: 100, mr: 2, maxHeight: '80vh', overflowY: 'auto', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1, transition: 'width 0.3s cubic-bezier(.4,0,.2,1)', '&:hover': { width: 140, boxShadow: 3 } }}>
+            <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
               <HistoryIcon color="primary" />
-              <span style={{ fontWeight: 600 }}>History</span>
             </Box>
             {history.length === 0 && (
-              <Box sx={{ color: 'text.secondary', fontSize: 14 }}>No documents yet.</Box>
+              <Box sx={{ color: 'text.secondary', fontSize: 14, textAlign: 'center' }}>No documents yet.</Box>
             )}
             {history.map((item, idx) => (
-              <Box key={item.sessionId} sx={{ display: 'flex', alignItems: 'center', mb: 1, p: 1, bgcolor: sessionId === item.sessionId ? 'primary.light' : 'background.paper', borderRadius: 1, cursor: 'pointer' }}>
-                <Box onClick={() => handleSelectHistory(item)} sx={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <Box key={item.sessionId} sx={{ display: 'flex', alignItems: 'center', mb: 1, p: 1, bgcolor: sessionId === item.sessionId ? 'primary.light' : 'background.paper', borderRadius: 1, cursor: 'pointer', transition: 'all 0.3s cubic-bezier(.4,0,.2,1)', '&:hover': { bgcolor: 'primary.100', transform: 'scale(1.04)' } }}>
+                <Box onClick={() => handleSelectHistory(item)} sx={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13, textAlign: 'center' }}>
                   {item.document.filename}
                 </Box>
                 <Tooltip title="Remove from history">

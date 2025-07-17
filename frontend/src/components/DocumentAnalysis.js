@@ -43,10 +43,10 @@ const DocumentAnalysis = ({ document, sessionId, onRemoveDocument }) => {
   return (
     <Box sx={{ width: '100%' }}>
       {/* Document Summary Section */}
-      <Card sx={{ mb: 3, elevation: 3 }}>
+      <Card sx={{ mb: 3, elevation: 3, transition: 'box-shadow 0.3s cubic-bezier(.4,0,.2,1)', '&:hover': { boxShadow: 6 } }}>
         <CardContent>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <Description sx={{ mr: 1, color: 'primary.main' }} />
+            <Description sx={{ mr: 1, color: 'primary.main', transition: 'color 0.3s' }} />
             <Typography variant="h5" component="h2">
               Document Summary
             </Typography>
@@ -56,11 +56,12 @@ const DocumentAnalysis = ({ document, sessionId, onRemoveDocument }) => {
                 label={formatUploadTime(document.upload_time)}
                 size="small"
                 variant="outlined"
+                sx={{ transition: 'background 0.3s, color 0.3s', '&:hover': { bgcolor: 'primary.100', color: 'primary.main' } }}
               />
               {/* Remove (X) button */}
               {onRemoveDocument && (
                 <Tooltip title="Remove document">
-                  <IconButton size="small" onClick={onRemoveDocument}>
+                  <IconButton size="small" onClick={onRemoveDocument} sx={{ transition: 'background 0.3s', '&:hover': { bgcolor: 'error.light' } }}>
                     <Close />
                   </IconButton>
                 </Tooltip>
@@ -91,18 +92,21 @@ const DocumentAnalysis = ({ document, sessionId, onRemoveDocument }) => {
             value={activeTab}
             onChange={handleTabChange}
             aria-label="document interaction modes"
+            sx={{ transition: 'background 0.3s' }}
           >
             <Tab
               icon={<QuestionAnswer />}
               label="Ask Anything"
               id="tab-0"
               aria-controls="tabpanel-0"
+              sx={{ transition: 'color 0.3s', '&:hover': { color: 'primary.main' } }}
             />
             <Tab
               icon={<Psychology />}
               label="Challenge Me"
               id="tab-1"
               aria-controls="tabpanel-1"
+              sx={{ transition: 'color 0.3s', '&:hover': { color: 'primary.main' } }}
             />
           </Tabs>
         </Box>

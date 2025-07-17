@@ -59,11 +59,16 @@ const AskAnything = ({ sessionId }) => {
 
     try {
       const apiUrl = process.env.REACT_APP_API_URL;
+      if (!apiUrl) {
+        throw new Error('API URL is not set. Please set REACT_APP_API_URL in your .env file.');
+      }
       const response = await axios.post(`${apiUrl}/ask`, {
         question: question,
         session_id: sessionId
       });
-
+      if (!response.data || typeof response.data.answer === 'undefined') {
+        throw new Error('Malformed response from server.');
+      }
       const assistantMessage = {
         type: 'assistant',
         content: response.data.answer,
@@ -77,7 +82,7 @@ const AskAnything = ({ sessionId }) => {
       setQuestion('');
       
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to get answer');
+      setError(err.message || err.response?.data?.detail || 'Failed to get answer');
       // Remove the user message if request failed
       setConversation(prev => prev.slice(0, -1));
     } finally {
@@ -137,7 +142,7 @@ const AskAnything = ({ sessionId }) => {
             <Memory />
           </Badge>
           <Tooltip title="Clear conversation">
-            <IconButton onClick={clearConversation} size="small">
+            <IconButton onClick={clearConversation} size="small" sx={{ transition: 'background 0.3s', '&:hover': { bgcolor: 'error.light' } }}>
               <Clear />
             </IconButton>
           </Tooltip>
@@ -167,7 +172,7 @@ const AskAnything = ({ sessionId }) => {
                   label={q}
                   variant="outlined"
                   onClick={() => setQuestion(q)}
-                  sx={{ cursor: 'pointer' }}
+                  sx={{ cursor: 'pointer', transition: 'all 0.3s', '&:hover': { bgcolor: 'primary.100', color: 'primary.main', transform: 'scale(1.05)' } }}
                 />
               ))}
             </Box>
@@ -183,6 +188,8 @@ const AskAnything = ({ sessionId }) => {
                 color: message.type === 'user' ? 'primary.contrastText' : 'text.primary',
                 ml: message.type === 'user' ? 4 : 0,
                 mr: message.type === 'user' ? 0 : 4,
+                transition: 'all 0.3s cubic-bezier(.4,0,.2,1)',
+                '&:hover': { boxShadow: 6 }
               }}
             >
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -279,7 +286,7 @@ const AskAnything = ({ sessionId }) => {
           onClick={askQuestion}
           disabled={isLoading || !question.trim()}
           startIcon={isLoading ? <CircularProgress size={20} /> : <Send />}
-          sx={{ minWidth: 100 }}
+          sx={{ minWidth: 100, transition: 'all 0.3s cubic-bezier(.4,0,.2,1)', '&:hover': { transform: 'scale(1.04)' } }}
         >
           {isLoading ? 'Asking...' : 'Ask'}
         </Button>
