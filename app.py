@@ -462,5 +462,9 @@ async def serve_frontend():
 if os.path.exists("frontend/build"):
     app.mount("/static", StaticFiles(directory="frontend/build/static"), name="static")
 
+@app.get("/PdfSum")
+def health_check():
+    return {"status": "ok"}
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
