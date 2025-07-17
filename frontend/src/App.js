@@ -1,9 +1,9 @@
 // To use your backend API, set REACT_APP_API_URL in your .env file (e.g., https://your-backend.onrender.com)
 // Example usage: const apiUrl = process.env.REACT_APP_API_URL;
-//import { SpeedInsights } from '@vercel/speed-insights/react';
+
 import React, { useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Container, Box, IconButton, Tooltip, Switch } from '@mui/material';
+import { CssBaseline, Container, Box, IconButton, Tooltip } from '@mui/material';
 import DocumentUpload from './components/DocumentUpload';
 import DocumentAnalysis from './components/DocumentAnalysis';
 import Header from './components/Header';

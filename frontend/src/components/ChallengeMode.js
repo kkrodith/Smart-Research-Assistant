@@ -23,9 +23,7 @@ import {
   Refresh,
   Send,
   CheckCircle,
-  Cancel,
-  Score,
-  TrendingUp
+  Score
 } from '@mui/icons-material';
 import axios from 'axios';
 
