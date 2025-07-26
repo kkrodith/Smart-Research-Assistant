@@ -1,0 +1,1 @@
+when runs this project on vercel it successfuly summarise the summary of the prdf but when clicking on "ask question" and enter a question it dioesnt display anything i mean all over screen nothing, does it because of api key error because i dont see any log error at vercel and render
